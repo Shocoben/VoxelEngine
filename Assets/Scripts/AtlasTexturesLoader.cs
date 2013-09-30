@@ -33,7 +33,6 @@ public class AtlasTexturesLoader : MonoBehaviour
 		{
 			string filePathNameOnly = _repoPath+"/"+info.name;
 			
-			bool fileExist = false;
 			string format = "";
 			Texture2D textureToAffect;
 			
