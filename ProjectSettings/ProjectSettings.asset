@@ -11,7 +11,7 @@ PlayerSettings:
   targetResolution: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: voxellEngine
+  productName: VoxelEngine
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   defaultScreenWidth: 1024
@@ -70,7 +70,7 @@ PlayerSettings:
     16:9: 1
     Others: 1
   iPhoneBundleIdentifier: com.Company.ProductName
-  productGUID: 8f0ea76b9cab1e248a2115bdb2b9f667
+  productGUID: 7ac0527934184304bb35e4a9884cbe75
   iPhoneBundleVersion: 1.0
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 6
@@ -142,7 +142,7 @@ PlayerSettings:
   ps3TrialMode: 0
   flashStrippingLevel: 2
   scriptingDefineSymbols: {}
-  metroPackageName: voxellEngine
+  metroPackageName: VoxelEngine
   metroPackageLogo: 
   metroPackageVersion: 
   metroCertificatePath: 
@@ -150,7 +150,7 @@ PlayerSettings:
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: voxellEngine
+  metroApplicationDescription: VoxelEngine
   metroTileLogo: 
   metroTileWideLogo: 
   metroTileSmallLogo: 
