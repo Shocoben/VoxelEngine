@@ -23,10 +23,46 @@ public class Voxel
 	public enum Type {Grass, Dirt};
 	public bool isActive = true;
 	public Vector3 voxelPos;
+	public Type _type;
+	VoxelChunk _parent;
 	
-	public Voxel(Vector3 pos)
+	public Voxel(Vector3 pos, Type type, VoxelChunk parent)
 	{
 		voxelPos = pos;
+		_type = type;
+		_parent = parent;
+	}
+	
+	public void addMeshCubeInfos(ref List<Vector3> vertices, ref List<Vector2> uv, ref List<Vector3> normals)
+	{
+		
+		#region front face
+		if (_parent
+		vertices.Add(new Vector3(0,0,0));
+		vertices.Add(new Vector3(0,1,0));
+		vertices.Add(new Vector3(1,1,0));
+		vertices.Add(new Vector3(1,0,0));
+		
+		for (int i = 0; i < 4; ++i)
+			normals.Add(Vector3.forward);
+		
+		_parent.addUV(ref uv, Voxel.Type.Dirt);
+		
+		#endregion
+		
+		
+		#region right face
+		vertices.Add(new Vector3(1,0,0));
+		vertices.Add(new Vector3(1,1,0));
+		vertices.Add(new Vector3(1,1,1));
+		vertices.Add(new Vector3(1,0,1));
+		
+		for (int i = 0; i < 4; ++i)
+			normals.Add(Vector3.right);
+		
+		_parent.addUV(ref uv, Voxel.Type.Grass);
+		
+		#endregion
 	}
 	
 }
@@ -42,6 +78,8 @@ public class VoxelChunk : MonoBehaviour {
 	MeshFilter _mf;
 	Mesh _mesh;
 	
+			
+			
 	void Awake()
 	{
 		if ( _typesAtlasPosDic.Count < typesAtlasPos.Count )
@@ -65,6 +103,11 @@ public class VoxelChunk : MonoBehaviour {
 	
 	}
 	
+	public Voxel[, ,] getVoxels()
+	{	
+		return _voxels;	
+	}
+			
 	Voxel[, ,] _voxels;
 	
 	void setup()
@@ -76,13 +119,13 @@ public class VoxelChunk : MonoBehaviour {
 			{
 				for (int z = 0; z < voxelsDepth; ++z)
 				{
-					_voxels[x, y, z] = new Voxel(new Vector3(x,y,z));
+					_voxels[x, y, z] = new Voxel(new Vector3(x,y,z), Voxel.Type.Dirt, this);
 				}
 			}
 		}
 	}
 	
-	void addUV(ref List<Vector2> uvList, Voxel.Type type)
+	public void addUV(ref List<Vector2> uvList, Voxel.Type type)
 	{
 		AtlasUV uvArray;
 		_typesAtlasPosDic.TryGetValue(type, out uvArray); 
@@ -99,39 +142,14 @@ public class VoxelChunk : MonoBehaviour {
 	void renderCubes()
 	{
 		List<Vector3> vertices = new List<Vector3>();
-		List<int> triangles = new List<int>();
+	
 		List<Vector2> uv = new List<Vector2>();
 		List<Vector3> normals = new List<Vector3>();
 		
-		#region front face
-		vertices.Add(new Vector3(0,0,0));
-		vertices.Add(new Vector3(0,1,0));
-		vertices.Add(new Vector3(1,1,0));
-		vertices.Add(new Vector3(1,0,0));
+		_voxels[0, 0, 0].addMeshCubeInfos(ref vertices, ref uv, ref normals);
 		
-		for (int i = 0; i < 4; ++i)
-			normals.Add(Vector3.forward);
-		
-		addUV(ref uv, Voxel.Type.Dirt);
-		
-		#endregion
-		
-		
-		#region right face
-		vertices.Add(new Vector3(1,0,0));
-		vertices.Add(new Vector3(1,1,0));
-		vertices.Add(new Vector3(1,1,1));
-		vertices.Add(new Vector3(1,0,1));
-		
-		for (int i = 0; i < 4; ++i)
-			normals.Add(Vector3.right);
-		
-		addUV(ref uv, Voxel.Type.Grass);
-		
-		#endregion
-		
+		List<int> triangles = new List<int>();
 		int vIndex = 0;
-		
 		while (vIndex < vertices.Count)
 		{
 			int startIndex = vIndex;
