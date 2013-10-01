@@ -18,15 +18,17 @@ public class TypeAtlasPos
 	public AtlasUV atlasUV;
 }
 
+public struct IntVector3
+{
+	
+	public int x;
+	public int y;
+	public int z;
+}
+
 public class Voxel
 {
-	private struct IntVector3
-	{
-		
-		public int x;
-		public int y;
-		public int z;
-	}
+
 	
 	public enum Type {Grass, Dirt};
 	public enum FaceID {front, back, top, bottom, right, left};
@@ -69,12 +71,10 @@ public class Voxel
 	
 	public void addMeshCubeInfos(ref List<Vector3> vertices, ref List<Vector2> uv, ref List<Vector3> normals)
 	{
-		if (intPos.x == 0 && intPos.y == 0 && intPos.z == 0)
-			Debug.Log(neighbourhoods[(int) FaceID.front]);
-		
+		#region front face
 		if (neighbourhoods[(int) FaceID.front] == null || !neighbourhoods[(int) FaceID.front].isActive)
 		{
-			#region front face
+			
 			vertices.Add(new Vector3(voxelPos.x,voxelPos.y,voxelPos.z));
 			vertices.Add(new Vector3(voxelPos.x,voxelPos.y + 1,voxelPos.z));
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z));
@@ -84,14 +84,14 @@ public class Voxel
 				normals.Add(Vector3.forward);
 			
 			_parent.addUV(ref uv, Voxel.Type.Dirt);
-			
-			#endregion
 		}
-		Debug.DrawRay(new Vector3(voxelPos.x, voxelPos.y, voxelPos.z), Vector3.forward, Color.green, 5);
+		#endregion
 		
+		//Debug.DrawRay(new Vector3(voxelPos.x, voxelPos.y, voxelPos.z), Vector3.forward, Color.green, 5);
+		
+		#region back face
 		if (neighbourhoods[(int) FaceID.back] == null || !neighbourhoods[(int) FaceID.back].isActive)
 		{
-			#region back face
 			vertices.Add(new Vector3(voxelPos.x,voxelPos.y,voxelPos.z + 1));
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z + 1));
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z + 1));
@@ -103,41 +103,72 @@ public class Voxel
 				normals.Add(Vector3.back);
 			
 			_parent.addUV(ref uv, Voxel.Type.Dirt);
-			#endregion
+			
 		}
+		#endregion
 		
+		#region right face
 		if (neighbourhoods[(int) FaceID.right] == null || !neighbourhoods[(int) FaceID.right].isActive)
 		{
-			#region right face
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z));
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z));
 			vertices.Add(new Vector3(voxelPos.x + 1, voxelPos.y + 1, voxelPos.z + 1));
-			vertices.Add(new Vector3(voxelPos.x + 1,0,voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z + 1));
 			
 			for (int i = 0; i < 4; ++i)
 				normals.Add(Vector3.right);
 			
-			_parent.addUV(ref uv, Voxel.Type.Grass);
-			
-			#endregion
+			_parent.addUV(ref uv, Voxel.Type.Dirt);
 		}
+		#endregion
 		
+		#region left face
 		if (neighbourhoods[(int) FaceID.left] == null || !neighbourhoods[(int) FaceID.left].isActive)
 		{
-			#region left face
+			
 			vertices.Add(new Vector3(voxelPos.x, voxelPos.y,voxelPos.z));
-			vertices.Add(new Vector3(voxelPos.x, 0,voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x, voxelPos.y,voxelPos.z + 1));
 			vertices.Add(new Vector3(voxelPos.x, voxelPos.y + 1, voxelPos.z + 1));
 			vertices.Add(new Vector3(voxelPos.x, voxelPos.y + 1,voxelPos.z));
 			
 			for (int i = 0; i < 4; ++i)
 				normals.Add(Vector3.left);
 			
-			_parent.addUV(ref uv, Voxel.Type.Grass);
-			#endregion
+			_parent.addUV(ref uv, Voxel.Type.Dirt);
 		}
+		#endregion
 		
+		#region bottom face
+		if (neighbourhoods[(int) FaceID.bottom] == null || !neighbourhoods[(int) FaceID.bottom].isActive)
+		{
+			
+				vertices.Add(new Vector3(voxelPos.x, voxelPos.y,voxelPos.z));
+				vertices.Add(new Vector3(voxelPos.x + 1, voxelPos.y,voxelPos.z));
+				vertices.Add(new Vector3(voxelPos.x + 1, voxelPos.y, voxelPos.z + 1));
+				vertices.Add(new Vector3(voxelPos.x, voxelPos.y,voxelPos.z + 1));
+	
+				for (int i = 0; i < 4; ++i)
+					normals.Add(Vector3.down);
+				
+				_parent.addUV(ref uv, Voxel.Type.Dirt);
+		}
+		#endregion
 		
+		#region top face
+		if (neighbourhoods[(int) FaceID.top] == null || !neighbourhoods[(int) FaceID.top].isActive)
+		{
+			
+				vertices.Add(new Vector3(voxelPos.x, voxelPos.y + 1,voxelPos.z));
+				vertices.Add(new Vector3(voxelPos.x, voxelPos.y + 1,voxelPos.z + 1));
+				vertices.Add(new Vector3(voxelPos.x + 1, voxelPos.y + 1, voxelPos.z + 1));
+				vertices.Add(new Vector3(voxelPos.x + 1, voxelPos.y + 1,voxelPos.z));
+				
+				for (int i = 0; i < 4; ++i)
+					normals.Add(Vector3.up);
+				
+				_parent.addUV(ref uv, Voxel.Type.Grass);
+		}
+		#endregion
 		
 		
 	}
@@ -164,6 +195,7 @@ public class Voxel
 		if (voxelPos.z > 0 )
 			neighbourhoods[(int) FaceID.front] = parentVoxels[intPos.x , intPos.y , intPos.z - 1];
 		
+		/*
 		if (intPos.x == 0 && intPos.y == 0 && intPos.z == 0)
 		{
 			for (int i = 0; i < 6; ++i)
@@ -176,7 +208,7 @@ public class Voxel
 				Debug.Log("face " + i + " " + neighbourhoods[i].voxelPos);
 				
 			}
-		}
+		}*/
 	}
 	
 }
@@ -190,6 +222,7 @@ public class VoxelChunk : MonoBehaviour {
 	public int voxelsDepth = 16;
 	
 	MeshFilter _mf;
+	MeshCollider _mc;
 	Mesh _mesh;
 	
 	Voxel[, ,] _voxels;		
@@ -205,16 +238,14 @@ public class VoxelChunk : MonoBehaviour {
 		}
 		
 		_mf = GetComponent<MeshFilter>();
+		_mc = GetComponent<MeshCollider>();
+		
 		_mesh = new Mesh();
 		_mesh.name = "VoxelChunk";
 		_mf.mesh = _mesh;
+		_mc.sharedMesh = _mesh;
 		setup();
 		renderCubes();
-	}
-	
-	// Use this for initialization
-	void Start () {
-	
 	}
 	
 	public Voxel[, ,] getVoxels()
@@ -264,13 +295,25 @@ public class VoxelChunk : MonoBehaviour {
 	
 	void renderCubes()
 	{
+		_mesh.Clear();
 		List<Vector3> vertices = new List<Vector3>();
-	
 		List<Vector2> uv = new List<Vector2>();
 		List<Vector3> normals = new List<Vector3>();
 		
-		_voxels[0, 0, 0].addMeshCubeInfos(ref vertices, ref uv, ref normals);
-		_voxels[0, 0, 1].addMeshCubeInfos(ref vertices, ref uv, ref normals);
+		for (int x =0; x < voxelsWidth; ++x)
+		{
+			for (int y =0; y < voxelsHeight; ++y)
+			{
+				for (int z = 0; z < voxelsDepth; ++z)
+				{
+					if (!_voxels[x, y , z].isActive)
+						continue;
+					_voxels[x, y, z].addMeshCubeInfos(ref vertices, ref uv, ref normals);
+				}
+			}
+		}
+		
+		Debug.Log("nbrVertices " + vertices.Count);
 		
 		List<int> triangles = new List<int>();
 		int vIndex = 0;
@@ -294,7 +337,25 @@ public class VoxelChunk : MonoBehaviour {
 		_mesh.triangles = triangles.ToArray();
 		_mesh.normals = normals.ToArray();
 		_mesh.uv = uv.ToArray();
+		
+		_mc.sharedMesh = _mesh;
+		
 	}
 	
+	public void onSelected(Vector3 point)
+	{
+		Vector3 relativePoint = new Vector3(Mathf.Abs(transform.position.x -point.x), Mathf.Abs(transform.position.y - point.y), Mathf.Abs(transform.position.z - point.z));
+
+		//IntVector3 flooredPoint = new IntVector3();
+		
+		int pointX = (relativePoint.x >= voxelsWidth)? voxelsWidth - 1 : Mathf.FloorToInt(relativePoint.x);
+		int pointY = (relativePoint.y >= voxelsHeight)? voxelsHeight - 1 : Mathf.FloorToInt(relativePoint.y);
+		int pointZ = (relativePoint.z >= voxelsDepth)? voxelsDepth - 1 : Mathf.FloorToInt(relativePoint.z);
+		
+		_voxels[pointX, pointY, pointZ].isActive = false;
+		
+		renderCubes();
+		
+	}
 	
 }
