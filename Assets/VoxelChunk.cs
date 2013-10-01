@@ -72,12 +72,12 @@ public class Voxel
 		if (intPos.x == 0 && intPos.y == 0 && intPos.z == 0)
 			Debug.Log(neighbourhoods[(int) FaceID.front]);
 		
-		if (neighbourhoods[(int) FaceID.back] == null || !neighbourhoods[(int) FaceID.back].isActive)
+		if (neighbourhoods[(int) FaceID.front] == null || !neighbourhoods[(int) FaceID.front].isActive)
 		{
 			#region front face
 			vertices.Add(new Vector3(voxelPos.x,voxelPos.y,voxelPos.z));
 			vertices.Add(new Vector3(voxelPos.x,voxelPos.y + 1,voxelPos.z));
-			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,0));
+			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z));
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z));
 			
 			for (int i = 0; i < 4; ++i)
@@ -87,20 +87,59 @@ public class Voxel
 			
 			#endregion
 		}
+		Debug.DrawRay(new Vector3(voxelPos.x, voxelPos.y, voxelPos.z), Vector3.forward, Color.green, 5);
+		
+		if (neighbourhoods[(int) FaceID.back] == null || !neighbourhoods[(int) FaceID.back].isActive)
+		{
+			#region back face
+			vertices.Add(new Vector3(voxelPos.x,voxelPos.y,voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x,voxelPos.y + 1,voxelPos.z + 1));
+			
+			
+			
+			for (int i = 0; i < 4; ++i)
+				normals.Add(Vector3.back);
+			
+			_parent.addUV(ref uv, Voxel.Type.Dirt);
+			#endregion
+		}
+		
+		if (neighbourhoods[(int) FaceID.right] == null || !neighbourhoods[(int) FaceID.right].isActive)
+		{
+			#region right face
+			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z));
+			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z));
+			vertices.Add(new Vector3(voxelPos.x + 1, voxelPos.y + 1, voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x + 1,0,voxelPos.z + 1));
+			
+			for (int i = 0; i < 4; ++i)
+				normals.Add(Vector3.right);
+			
+			_parent.addUV(ref uv, Voxel.Type.Grass);
+			
+			#endregion
+		}
+		
+		if (neighbourhoods[(int) FaceID.left] == null || !neighbourhoods[(int) FaceID.left].isActive)
+		{
+			#region left face
+			vertices.Add(new Vector3(voxelPos.x, voxelPos.y,voxelPos.z));
+			vertices.Add(new Vector3(voxelPos.x, 0,voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x, voxelPos.y + 1, voxelPos.z + 1));
+			vertices.Add(new Vector3(voxelPos.x, voxelPos.y + 1,voxelPos.z));
+			
+			for (int i = 0; i < 4; ++i)
+				normals.Add(Vector3.left);
+			
+			_parent.addUV(ref uv, Voxel.Type.Grass);
+			#endregion
+		}
 		
 		
-		#region right face
-		vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z));
-		vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z));
-		vertices.Add(new Vector3(voxelPos.x + 1, voxelPos.y + 1, voxelPos.z + 1));
-		vertices.Add(new Vector3(voxelPos.x + 1,0,voxelPos.z + 1));
 		
-		for (int i = 0; i < 4; ++i)
-			normals.Add(Vector3.right);
 		
-		_parent.addUV(ref uv, Voxel.Type.Grass);
-		
-		#endregion
 	}
 	
 	public void setNeighbourhoods()
@@ -120,10 +159,10 @@ public class Voxel
 			neighbourhoods[(int) FaceID.bottom] = parentVoxels[intPos.x , intPos.y - 1, intPos.z];
 		
 		if (voxelPos.z < _parent.voxelsDepth -1 )
-			neighbourhoods[(int) FaceID.front] = parentVoxels[intPos.x , intPos.y , intPos.z + 1];
+			neighbourhoods[(int) FaceID.back] = parentVoxels[intPos.x , intPos.y , intPos.z + 1];
 		
 		if (voxelPos.z > 0 )
-			neighbourhoods[(int) FaceID.back] = parentVoxels[intPos.x , intPos.y , intPos.z - 1];
+			neighbourhoods[(int) FaceID.front] = parentVoxels[intPos.x , intPos.y , intPos.z - 1];
 		
 		if (intPos.x == 0 && intPos.y == 0 && intPos.z == 0)
 		{
