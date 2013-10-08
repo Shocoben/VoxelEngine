@@ -28,8 +28,6 @@ public struct IntVector3
 
 public class Voxel
 {
-
-	
 	public enum Type {Grass, Dirt};
 	public enum FaceID {front, back, top, bottom, right, left};
 	
@@ -80,8 +78,12 @@ public class Voxel
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y + 1,voxelPos.z));
 			vertices.Add(new Vector3(voxelPos.x + 1,voxelPos.y,voxelPos.z));
 			
+			//Debug.DrawRay(new Vector3(voxelPos.x,voxelPos.y,voxelPos.z), Vector3.back, Color.green, 5); 
+			//Debug.Log(Vector3.Dot(Vector3.forward, Vector3.back));
+			Debug.DrawRay(new Vector3(voxelPos.x,voxelPos.y,voxelPos.z), Vector3.back, Color.red, 1000);
+			
 			for (int i = 0; i < 4; ++i)
-				normals.Add(Vector3.forward);
+				normals.Add(Vector3.back);
 			
 			_parent.addUV(ref uv, Voxel.Type.Dirt);
 		}
@@ -98,9 +100,9 @@ public class Voxel
 			vertices.Add(new Vector3(voxelPos.x,voxelPos.y + 1,voxelPos.z + 1));
 			
 			
-			
+			Debug.DrawRay(new Vector3(voxelPos.x,voxelPos.y,voxelPos.z + 1), Vector3.forward, Color.green, 1000);
 			for (int i = 0; i < 4; ++i)
-				normals.Add(Vector3.back);
+				normals.Add(Vector3.forward);
 			
 			_parent.addUV(ref uv, Voxel.Type.Dirt);
 			
@@ -243,13 +245,15 @@ public class VoxelChunk : MonoBehaviour {
 		_mesh = new Mesh();
 		_mesh.name = "VoxelChunk";
 		_mf.mesh = _mesh;
-		_mc.sharedMesh = _mesh;
+		
+		
+		
 		setup();
 		renderCubes();
 	}
 	
 	public Voxel[, ,] getVoxels()
-	{	
+	{
 		return _voxels;	
 	}
 			
@@ -313,8 +317,6 @@ public class VoxelChunk : MonoBehaviour {
 			}
 		}
 		
-		Debug.Log("nbrVertices " + vertices.Count);
-		
 		List<int> triangles = new List<int>();
 		int vIndex = 0;
 		while (vIndex < vertices.Count)
@@ -338,24 +340,44 @@ public class VoxelChunk : MonoBehaviour {
 		_mesh.normals = normals.ToArray();
 		_mesh.uv = uv.ToArray();
 		
+		_mc.sharedMesh = null;
 		_mc.sharedMesh = _mesh;
 		
 	}
 	
-	public void onSelected(Vector3 point)
+	Vector3 getRelativePoint(Vector3 point)
 	{
-		Vector3 relativePoint = new Vector3(Mathf.Abs(transform.position.x -point.x), Mathf.Abs(transform.position.y - point.y), Mathf.Abs(transform.position.z - point.z));
-
-		//IntVector3 flooredPoint = new IntVector3();
+		return new Vector3(Mathf.Abs(transform.position.x -point.x), Mathf.Abs(transform.position.y - point.y), Mathf.Abs(transform.position.z - point.z));
+	}
+	
+	IntVector3 getPointForVArray(Vector3 point, Vector3 forwardVector)
+	{
+		Vector3 relativePoint = getRelativePoint(point);
 		
-		int pointX = (relativePoint.x >= voxelsWidth)? voxelsWidth - 1 : Mathf.FloorToInt(relativePoint.x);
-		int pointY = (relativePoint.y >= voxelsHeight)? voxelsHeight - 1 : Mathf.FloorToInt(relativePoint.y);
-		int pointZ = (relativePoint.z >= voxelsDepth)? voxelsDepth - 1 : Mathf.FloorToInt(relativePoint.z);
+		IntVector3 intPoint = new IntVector3();
+		intPoint.x = Mathf.Clamp(Mathf.FloorToInt(relativePoint.x + 0.1f * forwardVector.x) ,0, voxelsWidth -1);
+		intPoint.y = Mathf.Clamp(Mathf.FloorToInt(relativePoint.y + 0.1f * forwardVector.y), 0, voxelsHeight -1);
+		intPoint.z = Mathf.Clamp(Mathf.FloorToInt(relativePoint.z + 0.1f * forwardVector.z), 0, voxelsDepth -1);
 		
-		_voxels[pointX, pointY, pointZ].isActive = false;
+		return intPoint;
+	}
+	
+	public void onLeftClick(Vector3 point)
+	{
+		IntVector3 intPoint = getPointForVArray(point, Camera.main.transform.forward);
+		
+		_voxels[intPoint.x, intPoint.y, intPoint.z].isActive = false;
 		
 		renderCubes();
 		
+	}
+	
+	public void onRightClick(Vector3 point)
+	{
+		Vector3 backCamV = Camera.main.transform.forward * -1;
+		IntVector3 intPoint = getPointForVArray(point, backCamV);
+		_voxels[intPoint.x, intPoint.y, intPoint.z].isActive = true;
+		renderCubes();
 	}
 	
 }

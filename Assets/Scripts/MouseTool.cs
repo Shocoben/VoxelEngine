@@ -5,12 +5,13 @@ public class MouseTool : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		Screen.lockCursor = true;
 	}
 	
 	public LayerMask mouseSelectLayer;
 	// Update is called once per frame
-	void Update () {
+	void Update () 
+	{
 		
 	 	if (Input.GetMouseButtonDown(0))
 		{
@@ -19,11 +20,25 @@ public class MouseTool : MonoBehaviour {
 			RaycastHit hit;
 			if (Physics.Raycast(ray, out hit, 100, mouseSelectLayer.value))
 			{
-				Debug.Log(hit.transform.tag);
 				if (hit.transform.CompareTag("Chunk"))
 				{
 					VoxelChunk chunk = hit.transform.GetComponent<VoxelChunk>();
-					chunk.onSelected(hit.point);
+					chunk.onLeftClick(hit.point);
+				}
+			}
+		}
+		
+		if (Input.GetMouseButtonDown(1))
+		{
+			Camera mainCam = Camera.main;
+			Ray ray = new Ray(mainCam.transform.position, mainCam.transform.forward);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit, 100, mouseSelectLayer.value))
+			{
+				if (hit.transform.CompareTag("Chunk"))
+				{
+					VoxelChunk chunk = hit.transform.GetComponent<VoxelChunk>();
+					chunk.onRightClick(hit.point);
 				}
 			}
 		}	
